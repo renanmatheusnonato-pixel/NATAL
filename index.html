@@ -451,6 +451,15 @@ fbq('track', 'PageView');
   [['checkout-completo', 18], ['checkout-basico', 10]].forEach(([id, value]) =>
     document.getElementById(id).addEventListener('click', () => fbq('track', 'InitiateCheckout', { value, currency: 'BRL' })));
 
+  // repassa as UTMs do anúncio para o checkout da Cakto (para saber de qual criativo veio cada venda)
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href*="pay.cakto.com.br"]');
+    if (!a) return;
+    const u = new URL(a.href);
+    new URLSearchParams(location.search).forEach((v, k) => u.searchParams.set(k, v));
+    a.href = u;
+  }, true);
+
   // animação ao rolar
   const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('on')), { threshold: .15 });
   document.querySelectorAll('.revelar').forEach(el => io.observe(el));
